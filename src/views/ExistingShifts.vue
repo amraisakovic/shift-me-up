@@ -1,6 +1,6 @@
 <template>
   <div class="existing-shifts-container">
-<!--    <h1>Existing Shifts</h1>-->
+    <h1>Existing Shifts</h1>
 
     <!-- Loading Indicator -->
     <div v-if="loading" class="loading">Loading shifts...</div>
@@ -8,10 +8,14 @@
     <!-- Shifts List -->
     <div v-if="!loading && shifts.length" class="shifts-list">
       <div class="shift-card" v-for="shift in shifts" :key="shift.id">
-        <p><strong>Location:</strong> {{ shift.location }}</p>
-        <p><strong>Number of Children:</strong> {{ shift.children }}</p>
+        <p><strong>Title:</strong> {{ shift.title }}</p>
+        <p><strong>Status:</strong> {{ shift.status }}</p>
+        <p><strong>Assigned To:</strong> {{ shift.assignedTo }}</p>
         <p><strong>Date:</strong> {{ shift.date }}</p>
-        <p><strong>Time:</strong> {{ shift.time }}</p>
+        <p><strong>End Date:</strong> {{ shift.endDate }}</p>
+        <p><strong>Time:</strong> {{ shift.timeFrom }} - {{ shift.timeTo }}</p>
+        <p><strong>Location:</strong> {{ shift.partialLocation }}</p>
+        <p><strong>Pay:</strong> {{ shift.pay }}</p>
       </div>
     </div>
 
@@ -147,8 +151,8 @@ export default {
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .existing-shifts-container {
-    margin-left: 80px; /* Closed sidebar width */
-    width: calc(100% - 80px); /* Adjust for smaller screens */
+    margin-left: 20px; /* Closed sidebar width */
+    width: calc(100% - 30px); /* Adjust for smaller screens */
     align-items: flex-start; /* Keep content aligned left */
   }
 

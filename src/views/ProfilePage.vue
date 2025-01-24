@@ -154,6 +154,8 @@ export default {
 </script>
 
 <style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
 /* General Styling */
 .profile {
   max-width: 800px;
@@ -162,7 +164,7 @@ export default {
   border-radius: 10px;
   background-color: #f4f9f9;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .navbar h1 {
@@ -228,21 +230,4 @@ export default {
   font-weight: bold; /* Bold text */
   font-size: 0.9rem; /* Slightly smaller text */
 }
-
-::v-deep(.picked-shift-event):hover {
-  background-color: #ffd580; /* Slightly darker orange on hover */
-  border-color: #ff8c00; /* Dark orange border */
-  transform: scale(1.02); /* Slightly enlarge on hover */
-  transition: all 0.2s ease; /* Smooth hover transition */
-}
-
-h2 {
-  color: #333;
-  font-size: 1.5rem;
-}
-
-p {
-  color: #555;
-}
-
 </style>

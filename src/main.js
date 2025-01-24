@@ -9,8 +9,9 @@ import AdminPanel from './views/AdminPanel.vue';
 import LoginPage from './views/LoginPage.vue';
 import MyShifts from "@/views/MyShifts.vue";
 import SetupPage from "@/views/SetupPage.vue";
+import AdminNews from "@/views/AdminNews.vue";
 
-import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import onAuthStateChanged
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -23,6 +24,7 @@ const routes = [
     { path: '/login', component: LoginPage },
     { path: '/my-shifts', component: MyShifts, meta: { requiresAuth: true, role: 'nanny' } },
     { path: '/setup', component: SetupPage, meta: { requiresAuth: true, role: 'nanny' } },
+    { path: '/admin-news', component: AdminNews, meta: { requiresAuth: true, role: 'admin' } },
 ];
 
 const router = createRouter({
@@ -32,11 +34,10 @@ const router = createRouter({
 
 // Firebase Authentication Observer
 const auth = getAuth();
-let userRole = null; // Variable to store user role globally
+let userRole = null;
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // User is signed in; fetch their role from Firestore
         try {
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             userRole = userDoc.data()?.role;
@@ -44,7 +45,6 @@ onAuthStateChanged(auth, async (user) => {
             console.error('Error fetching user role: ', error);
         }
     } else {
-        // User is signed out; reset role
         userRole = null;
     }
 });
@@ -53,7 +53,6 @@ onAuthStateChanged(auth, async (user) => {
 router.beforeEach(async (to, from, next) => {
     if (to.meta.requiresAuth) {
         if (auth.currentUser) {
-            // Check role for the route
             if (to.meta.role === userRole) {
                 next();
             } else {
@@ -65,11 +64,10 @@ router.beforeEach(async (to, from, next) => {
             next('/login');
         }
     } else {
-        next(); // No authentication required
+        next();
     }
 });
 
-// Create and mount the Vue app
 const app = createApp(App);
 app.use(router);
 app.mount('#app');

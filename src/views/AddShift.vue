@@ -14,8 +14,23 @@
       </div>
 
       <div class="form-group">
-        <label for="location">Location:</label>
-        <input v-model="newShift.location" type="text" id="location" placeholder="Enter location" />
+        <label for="fullLocation">Full Location:</label>
+        <input
+            v-model="newShift.fullLocation"
+            type="text"
+            id="fullLocation"
+            placeholder="Enter full address (e.g., 123 Main St, 11234 Brooklyn, NYC)"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="partialLocation">Partial Location:</label>
+        <input
+            v-model="newShift.partialLocation"
+            type="text"
+            id="partialLocation"
+            placeholder="Enter partial address (e.g., 11234 Brooklyn)"
+        />
       </div>
 
       <div class="form-group">
@@ -25,7 +40,11 @@
 
       <div class="form-group">
         <label for="description">Description:</label>
-        <textarea v-model="newShift.description" id="description" placeholder="Enter job description"></textarea>
+        <textarea
+            v-model="newShift.description"
+            id="description"
+            placeholder="Enter job description"
+        ></textarea>
       </div>
 
       <div class="form-group">
@@ -58,7 +77,8 @@ export default {
       newShift: {
         title: "",
         pay: "",
-        location: "",
+        fullLocation: "",
+        partialLocation: "",
         children: 0,
         description: "",
         date: "",
@@ -97,7 +117,8 @@ export default {
       this.newShift = {
         title: "",
         pay: "",
-        location: "",
+        fullLocation: "",
+        partialLocation: "",
         children: 0,
         description: "",
         date: "",
@@ -111,7 +132,7 @@ export default {
 
 <style scoped>
 /* Import Poppins Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
 
 /* General Styling */
 .add-shift-container {
@@ -121,7 +142,7 @@ export default {
   background-color: #ffffff;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 h1 {
@@ -151,7 +172,7 @@ textarea {
   border: 1px solid #ddd;
   border-radius: 8px;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 textarea {
@@ -177,7 +198,6 @@ button:hover {
   transform: scale(1.02);
 }
 
-/* Add subtle transition */
 button:active {
   transform: scale(0.98);
 }

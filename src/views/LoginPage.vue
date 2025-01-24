@@ -1,6 +1,7 @@
 <template>
   <div class="login-page">
     <div class="login-container">
+      <img src="../assets/Shift Me Up Logo.png" alt="Logo" class="logo" />
       <h1>Welcome Back!</h1>
       <p>Please login to your account</p>
       <form @submit.prevent="login">
@@ -88,12 +89,15 @@ export default {
 </script>
 
 <style scoped>
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
 /* Your existing styling */
 .login-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 80vh;
   background-color: #f9f9f9;
 }
 
@@ -105,6 +109,7 @@ export default {
   text-align: center;
   max-width: 400px;
   width: 100%;
+  font-family: "Poppins", sans-serif;
 }
 
 .login-container h1 {
@@ -165,5 +170,10 @@ input:focus {
 
 .login-button:active {
   background-color: #1c5233;
+}
+
+.logo{
+  height: 150px;
+  width: 150px;
 }
 </style>

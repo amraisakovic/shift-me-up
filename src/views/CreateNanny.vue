@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { getAuth, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 
@@ -29,15 +29,25 @@ export default {
         email: "",
         password: "",
       },
+      isCreatingAccount: false, // Prevent multiple submissions
     };
   },
   methods: {
     async createNanny() {
-      const auth = getAuth();
-      try {
-        // Temporarily sign in as the admin
-        const adminUser = auth.currentUser;
+      if (this.isCreatingAccount) return;
+      this.isCreatingAccount = true;
 
+      const auth = getAuth();
+      const adminUser = auth.currentUser;
+
+      if (!adminUser) {
+        console.error("Admin is not logged in.");
+        alert("Failed to create nanny account. Please ensure you are logged in as an admin.");
+        this.isCreatingAccount = false;
+        return;
+      }
+
+      try {
         // Create the nanny account
         const { user } = await createUserWithEmailAndPassword(auth, this.nanny.email, this.nanny.password);
 
@@ -51,16 +61,24 @@ export default {
 
         alert("Nanny account created successfully!");
 
-        // Sign out from the nanny account and restore admin session
-        await signOut(auth);
-        await auth.signInWithEmailAndPassword(adminUser.email, adminUser.password);
-
-        // Reset form fields
+        // Clear the form fields before switching accounts
         this.nanny.email = "";
         this.nanny.password = "";
+
+        // Sign out the newly created nanny account
+        await signOut(auth);
+
+        // Restore the admin session
+        await signInWithEmailAndPassword(auth, adminUser.email, adminUser.password);
       } catch (error) {
-        console.error("Error creating nanny account: ", error);
-        alert("Failed to create nanny account. Please try again.");
+        if (error.code === "auth/email-already-in-use") {
+          console.error("The email is already in use:", error);
+          alert("This email is already in use.");
+        } else {
+          console.error("Error creating nanny account:", error);
+        }
+      } finally {
+        this.isCreatingAccount = false; // Reset the flag
       }
     },
   },

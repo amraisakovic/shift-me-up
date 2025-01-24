@@ -8,7 +8,7 @@
       <li v-for="shift in shifts" :key="shift.id">
         <h2>{{ shift.title }}</h2>
         <p><strong>Pay:</strong> {{ shift.pay }}</p>
-        <p><strong>Location:</strong> {{ shift.location }}</p>
+        <p><strong>Location:</strong> {{ shift.partialLocation }}</p>
         <p><strong>Number of Children:</strong> {{ shift.children }}</p>
         <p><strong>Date:</strong> {{ shift.date }}</p>
         <p><strong>Time:</strong> {{ shift.timeFrom }} - {{ shift.timeTo }}</p>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { collection, getDocs, doc, updateDoc, increment } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase";
 import { getAuth } from "firebase/auth";
 
@@ -62,20 +62,14 @@ export default {
       }
 
       try {
-        // Update shift in Firestore to assign it to the current user
+        // Update shift in Firestore to set it to "Pending Approval"
         const shiftRef = doc(db, "shifts", shift.id);
         await updateDoc(shiftRef, {
           assignedTo: user.email, // Assign the shift to the user's email
-          status: "Assigned", // Update the status to "Assigned"
+          status: "Pending Approval", // Update the status to "Pending Approval"
         });
 
-        // Update user's picked shifts in Firestore
-        const userRef = doc(db, "users", user.uid);
-        await updateDoc(userRef, {
-          shiftCounter: increment(1), // Increment shiftCounter by 1
-        });
-
-        alert(`You have successfully picked up the shift: ${shift.title}`);
+        alert(`Shift request submitted: ${shift.title}. Await admin approval.`);
         this.fetchShifts(); // Refresh shifts list to exclude the picked shift
       } catch (error) {
         console.error("Error picking shift:", error);
@@ -90,6 +84,8 @@ export default {
 </script>
 
 <style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
 .shifts {
   max-width: 600px;
   margin: 20px auto;
@@ -97,6 +93,7 @@ export default {
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
+  font-family: "Poppins", sans-serif;
 }
 
 .no-shifts {

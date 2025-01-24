@@ -57,6 +57,7 @@ export default {
         age: "",
         experience: "",
         preferredLocation: "",
+        color: "", // Color field added
       },
       password: "",
     };
@@ -77,6 +78,9 @@ export default {
         const userDoc = await getDoc(userRef);
 
         if (userDoc.exists() && userDoc.data().firstLogin) {
+          // Assign a random color
+          this.profile.color = this.generateRandomColor();
+
           // Save profile to Firestore
           await setDoc(
               userRef,
@@ -101,6 +105,14 @@ export default {
         console.error("Error saving profile or updating password:", error);
         alert("Failed to complete setup. Please try again.");
       }
+    },
+    generateRandomColor() {
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
     },
   },
 };

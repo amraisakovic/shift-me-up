@@ -10,15 +10,18 @@
       <div
           v-for="shift in shifts"
           :key="shift.id"
-          class="shift-card"
+          :class="['shift-card', { 'pending-shift': shift.status === 'Pending Approval', 'approved-shift': shift.status === 'Approved' }]"
       >
         <h2>{{ shift.title }}</h2>
         <p><strong>Pay:</strong> {{ shift.pay }}</p>
-        <p><strong>Location:</strong> {{ shift.location }}</p>
+        <p><strong>Location:</strong>
+          {{ shift.status === 'Approved' ? shift.fullLocation : shift.partialLocation }}
+        </p>
         <p><strong>Number of Children:</strong> {{ shift.children }}</p>
         <p><strong>Description:</strong> {{ shift.description }}</p>
         <p><strong>Date:</strong> {{ shift.date }}</p>
         <p><strong>Time:</strong> {{ shift.timeFrom }} - {{ shift.timeTo }}</p>
+        <p><strong>Status:</strong> {{ shift.status }}</p>
       </div>
     </div>
   </div>
@@ -97,6 +100,17 @@ export default {
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.pending-shift {
+  background-color: #f0f0f0; /* Light gray for pending approval */
+  border-color: #ccc;
+}
+
+.approved-shift {
+  background-color: #e6f7e6; /* Light green for approved shifts */
+  border-color: #8bc34a;
 }
 
 .shift-card h2 {

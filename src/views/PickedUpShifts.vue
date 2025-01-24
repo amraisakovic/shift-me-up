@@ -4,15 +4,18 @@
     <div v-if="shifts.length > 0" class="shift-list">
       <div v-for="shift in shifts" :key="shift.id" class="shift-card">
         <h2>{{ shift.title }}</h2>
-        <p><strong>Location:</strong> {{ shift.location }}</p>
+        <p><strong>Partial Location:</strong> {{ shift.partialLocation }}</p>
         <p><strong>Assigned To:</strong> {{ shift.assignedTo || "Unassigned" }}</p>
         <p><strong>Status:</strong> {{ shift.status }}</p>
         <p><strong>Date:</strong> {{ shift.date }}</p>
         <p><strong>Time:</strong> {{ shift.timeFrom }} - {{ shift.timeTo }}</p>
-        <button @click="markAsComplete(shift.id)">Mark as Complete</button>
+        <div class="actions" v-if="shift.status === 'Pending Approval'">
+          <button @click="approveShift(shift.id)">Approve</button>
+          <button @click="declineShift(shift.id)">Decline</button>
+        </div>
       </div>
     </div>
-    <p v-else>No shifts have been picked up yet.</p>
+    <p v-else>No shifts are awaiting approval.</p>
   </div>
 </template>
 
@@ -29,8 +32,8 @@ export default {
   methods: {
     async fetchPickedUpShifts() {
       try {
-        // Fetch shifts where 'assignedTo' is not null
-        const q = query(collection(db, "shifts"), where("assignedTo", "!=", null));
+        // Fetch shifts where 'status' is 'Pending Approval'
+        const q = query(collection(db, "shifts"), where("status", "==", "Pending Approval"));
         const querySnapshot = await getDocs(q);
 
         this.shifts = querySnapshot.docs.map((doc) => ({
@@ -41,16 +44,28 @@ export default {
         console.error("Error fetching picked up shifts:", error);
       }
     },
-    async markAsComplete(shiftId) {
+    async approveShift(shiftId) {
       try {
-        // Update the shift status to 'Completed'
+        // Update the shift status to 'Approved'
         const shiftDoc = doc(db, "shifts", shiftId);
-        await updateDoc(shiftDoc, { status: "Completed" });
-        alert("Shift marked as completed!");
+        await updateDoc(shiftDoc, { status: "Approved" });
+        alert("Shift approved successfully!");
         this.fetchPickedUpShifts(); // Refresh the list
       } catch (error) {
-        console.error("Error updating shift status:", error);
-        alert("Failed to update shift status.");
+        console.error("Error approving shift:", error);
+        alert("Failed to approve shift.");
+      }
+    },
+    async declineShift(shiftId) {
+      try {
+        // Update the shift status to 'Declined' and reset the assignedTo field
+        const shiftDoc = doc(db, "shifts", shiftId);
+        await updateDoc(shiftDoc, { status: "Declined", assignedTo: null });
+        alert("Shift declined successfully!");
+        this.fetchPickedUpShifts(); // Refresh the list
+      } catch (error) {
+        console.error("Error declining shift:", error);
+        alert("Failed to decline shift.");
       }
     },
   },
@@ -90,6 +105,12 @@ export default {
   margin: 5px 0;
 }
 
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
 button {
   padding: 8px 12px;
   background-color: #2e8b57;
@@ -101,5 +122,13 @@ button {
 
 button:hover {
   background-color: #276c48;
+}
+
+button:last-child {
+  background-color: #d9534f; /* Red for Decline */
+}
+
+button:last-child:hover {
+  background-color: #c9302c;
 }
 </style>

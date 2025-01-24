@@ -1,18 +1,18 @@
 <template>
   <div class="admin-panel">
     <!-- Sidebar -->
-    <aside class="sidebar" :class="{ collapsed: isMobile && !isMenuOpen }">
+    <aside class="sidebar" :class="{ collapsed: isCollapsed }">
       <div class="menu-header">
         <!-- Hamburger Icon -->
-        <button class="hamburger" @click="toggleMenu">
+        <button class="hamburger" @click="toggleSidebar">
           <span></span>
           <span></span>
           <span></span>
         </button>
-        <!-- Show "Menu" only if expanded -->
-        <h2 v-if="!isMobile || isMenuOpen">Menu</h2>
+
+        <h2 v-if="!isCollapsed"><img src="../assets/Shift Me Up Logo.png" alt="Logo" class="logo" /></h2>
       </div>
-      <ul v-if="!isMobile || isMenuOpen">
+      <ul v-if="!isCollapsed || !isMobile">
         <li
             v-for="menuItem in menu"
             :key="menuItem.name"
@@ -21,16 +21,13 @@
         >
           {{ menuItem.label }}
         </li>
-        <!-- Logout Button -->
-        <li @click="logout" class="logout">
-          Logout
-        </li>
+        <li @click="logout" class="logout">Logout</li>
       </ul>
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content">
-      <h1>{{ activeMenuLabel }}</h1>
+    <main class="main-content" :class="{ shifted: !isCollapsed }">
+<!--      <h1>{{ activeMenuLabel }}</h1>-->
       <component :is="currentComponent" />
     </main>
   </div>
@@ -42,20 +39,22 @@ import AddShift from "./AddShift.vue";
 import PickedUpShifts from "./PickedUpShifts.vue";
 import NannyOverview from "./NannyOverview.vue";
 import CreateNanny from "./CreateNanny.vue";
+import AdminNews from "./AdminNews.vue";
 import { getAuth, signOut } from "firebase/auth";
 
 export default {
   data() {
     return {
       activeMenu: "ExistingShifts",
-      isMobile: false,
-      isMenuOpen: false, // Tracks sidebar visibility
+      isCollapsed: true, // Sidebar starts collapsed
+      isMobile: window.innerWidth <= 768, // Detect mobile view
       menu: [
         { name: "ExistingShifts", label: "Existing Shifts" },
         { name: "AddShift", label: "Add Shift" },
         { name: "PickedUpShifts", label: "Picked Up Shifts" },
         { name: "NannyOverview", label: "Nanny Overview" },
         { name: "CreateNanny", label: "Create Nanny Account" },
+        { name: "AdminNews", label: "Manage News" },
       ],
     };
   },
@@ -67,6 +66,7 @@ export default {
         PickedUpShifts,
         NannyOverview,
         CreateNanny,
+        AdminNews,
       };
       return components[this.activeMenu];
     },
@@ -77,32 +77,30 @@ export default {
   methods: {
     selectMenu(menuName) {
       this.activeMenu = menuName;
-      if (this.isMobile) this.isMenuOpen = false; // Collapse menu after selection
     },
-    toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen; // Toggle menu visibility
-    },
-    handleResize() {
-      this.isMobile = window.innerWidth <= 768; // Check if screen size is mobile
-      if (!this.isMobile) {
-        this.isMenuOpen = true; // Ensure menu stays open on desktop
-      }
+    toggleSidebar() {
+      this.isCollapsed = !this.isCollapsed;
     },
     logout() {
       const auth = getAuth();
       signOut(auth)
           .then(() => {
             alert("You have successfully logged out!");
-            this.$router.push("/login"); // Redirect to login page
+            this.$router.push("/login");
           })
           .catch((error) => {
             console.error("Logout Error:", error);
           });
     },
+    handleResize() {
+      this.isMobile = window.innerWidth <= 768;
+      if (!this.isMobile) {
+        this.isCollapsed = false; // Ensure sidebar is expanded on desktop
+      }
+    },
   },
   mounted() {
-    this.handleResize(); // Initial check
-    window.addEventListener("resize", this.handleResize); // Listen for resize events
+    window.addEventListener("resize", this.handleResize);
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.handleResize);
@@ -111,11 +109,15 @@ export default {
 </script>
 
 <style scoped>
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
 /* Admin Panel Layout */
 .admin-panel {
-  display: grid;
-  grid-template-columns: auto 1fr;
+  display: flex;
   height: 100vh;
+  overflow: auto;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Sidebar */
@@ -124,24 +126,23 @@ export default {
   top: 0;
   left: 0;
   height: 100%;
-  width: 250px; /* Full width when expanded */
+  width: 60px; /* Collapsed width */
   background-color: #2e8b57;
   color: white;
-  padding: 20px;
+  overflow-x: hidden;
+  transition: all 0.3s ease;
   z-index: 1000;
-  transition: width 0.3s ease-in-out;
-  overflow: hidden;
 }
 
-.sidebar.collapsed {
-  width: 30px; /* Thin vertical line with hamburger icon */
+.sidebar:not(.collapsed) {
+  width: 250px; /* Expanded width */
 }
 
 .menu-header {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  padding: 10px 15px;
 }
 
 .hamburger {
@@ -172,8 +173,6 @@ export default {
 
 .sidebar ul li {
   padding: 10px 15px;
-  margin-bottom: 10px;
-  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -184,7 +183,7 @@ export default {
 }
 
 .sidebar ul li.logout {
-  color: red;
+  color: white;
   font-weight: bold;
 }
 
@@ -194,12 +193,18 @@ export default {
 
 /* Main Content */
 .main-content {
-  margin-left: 250px; /* Offset by the expanded sidebar width */
+  flex-grow: 1;
+  margin-left: 60px; /* Default margin for collapsed sidebar */
   padding: 30px;
-  transition: margin-left 0.3s ease-in-out;
+  transition: margin-left 0.3s ease;
 }
 
-.sidebar.collapsed + .main-content {
-  margin-left: 50px; /* Offset by the collapsed sidebar width */
+.main-content.shifted {
+  margin-left: 250px; /* Adjust based on expanded sidebar width */
+}
+
+img{
+  height: 50px;
+  width: auto;
 }
 </style>
