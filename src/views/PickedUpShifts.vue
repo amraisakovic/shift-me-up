@@ -10,7 +10,7 @@
         <p><strong>Date:</strong> {{ shift.date }}</p>
         <p><strong>Time:</strong> {{ shift.timeFrom }} - {{ shift.timeTo }}</p>
         <div class="actions" v-if="shift.status === 'Pending Approval'">
-          <button @click="approveShift(shift.id)">Approve</button>
+          <button @click="approveShift(shift.id, shift.applications)">Approve</button>
           <button @click="declineShift(shift.id)">Decline</button>
         </div>
       </div>
@@ -44,11 +44,25 @@ export default {
         console.error("Error fetching picked up shifts:", error);
       }
     },
-    async approveShift(shiftId) {
+    async approveShift(shiftId, applications) {
       try {
-        // Update the shift status to 'Approved'
+        if (applications.length === 0) {
+          alert("No applications to approve.");
+          return;
+        }
+
+        // Assuming the admin selects the first nanny from the applications array
+        const nannyToApprove = applications[0]; // You can add a selection mechanism if needed
+
         const shiftDoc = doc(db, "shifts", shiftId);
-        await updateDoc(shiftDoc, { status: "Approved" });
+
+        // Update the shift with the approved nanny and change status to "Assigned"
+        await updateDoc(shiftDoc, {
+          status: "Assigned", // Change the status to "Assigned"
+          assignedTo: nannyToApprove, // Assign the shift to the selected nanny
+          applications: [], // Clear the applications array after assigning
+        });
+
         alert("Shift approved successfully!");
         this.fetchPickedUpShifts(); // Refresh the list
       } catch (error) {

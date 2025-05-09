@@ -39,13 +39,13 @@ export default {
         const shiftsCollection = collection(db, "shifts");
         const querySnapshot = await getDocs(shiftsCollection);
 
-        // Filter and map Firestore documents to shifts array
+        // Map Firestore documents to shifts array and filter by unassigned or pending approval
         this.shifts = querySnapshot.docs
             .map((doc) => ({
               id: doc.id,
               ...doc.data(),
             }))
-            .filter((shift) => shift.status === "Unassigned"); // Show only unassigned shifts
+            .filter((shift) => shift.status === "Unassigned" || shift.status === "Pending Approval");
 
         console.log("Fetched available shifts:", this.shifts); // Debug log for fetched shifts
       } catch (error) {
@@ -62,15 +62,17 @@ export default {
       }
 
       try {
-        // Update shift in Firestore to set it to "Pending Approval"
+        // Reference to the shift document in Firestore
         const shiftRef = doc(db, "shifts", shift.id);
+
+        // Add the nanny's email to the 'applications' array
         await updateDoc(shiftRef, {
-          assignedTo: user.email, // Assign the shift to the user's email
-          status: "Pending Approval", // Update the status to "Pending Approval"
+          status: "Pending Approval", // Keep the status as 'Pending Approval'
+          applications: [...shift.applications, user.email], // Add the nanny's email to the applications array
         });
 
         alert(`Shift request submitted: ${shift.title}. Await admin approval.`);
-        this.fetchShifts(); // Refresh shifts list to exclude the picked shift
+        this.fetchShifts(); // Refresh shifts list
       } catch (error) {
         console.error("Error picking shift:", error);
         alert("Failed to pick up the shift. Please try again.");

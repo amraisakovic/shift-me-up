@@ -137,7 +137,7 @@ export default {
 /* General Styling */
 .add-shift-container {
   max-width: 600px;
-  margin: 30px auto;
+  margin: auto;
   padding: 20px;
   background-color: #ffffff;
   border-radius: 15px;
@@ -208,16 +208,16 @@ button:active {
   }
 
   h1 {
-    font-size: 1.5rem;
+    font-size: 1rem;
   }
 
   input,
   textarea {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
   }
 
   button {
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     padding: 10px;
   }
 }

@@ -151,8 +151,8 @@ export default {
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .existing-shifts-container {
-    margin-left: 20px; /* Closed sidebar width */
-    width: calc(100% - 30px); /* Adjust for smaller screens */
+    margin-left: 10px; /* Closed sidebar width */
+    width: calc(100% - 40px); /* Adjust for smaller screens */
     align-items: flex-start; /* Keep content aligned left */
   }
 
@@ -167,11 +167,11 @@ export default {
 
 @media (max-width: 480px) {
   .existing-shifts-container h1 {
-    font-size: 1.5rem; /* Smaller heading size */
+    font-size: 1rem; /* Smaller heading size */
   }
 
   .shift-card {
-    font-size: 0.9rem; /* Smaller font for compact screens */
+    font-size: 0.7rem; /* Smaller font for compact screens */
     padding: 10px;
   }
 }

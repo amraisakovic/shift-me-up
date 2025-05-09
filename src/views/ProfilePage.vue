@@ -170,7 +170,7 @@ export default {
 .navbar h1 {
   text-align: center;
   margin-bottom: 20px;
-  color: #2e8b57;
+  color: #fff;
 }
 
 .profile-card {

@@ -139,7 +139,7 @@ export default {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
+  font-family: Poppins, sans-serif;
 }
 
 h1 {
@@ -151,7 +151,7 @@ h1 {
 /* Form Styling */
 form {
   background: #f8f9fa;
-  padding: 20px;
+  padding: 70px;
   border-radius: 8px;
   margin-bottom: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
